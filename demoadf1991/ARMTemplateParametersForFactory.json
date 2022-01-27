@@ -1,0 +1,35 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "demoadf1991"
+		},
+		"AzureSqlDatabase1_connectionString": {
+			"value": ""
+		},
+		"Destination_connection_connectionString": {
+			"value": ""
+		},
+		"Oracle1_connectionString": {
+			"value": ""
+		},
+		"source_connection_connectionString": {
+			"value": ""
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://mkeyvault1991.vault.azure.net/"
+		},
+		"Trigger7AM_properties_PL_INV_OLTP_to_ADLS_parameters_OLTP_DB_Name": {
+			"value": [
+				"PRODUCT",
+				"VENDOR",
+				"WAREHOUSE",
+				"INVENTORY"
+			]
+		},
+		"Trigger_Storage_properties_typeProperties_scope": {
+			"value": "/subscriptions/c33cc9bf-fbce-404a-bc75-943789884ffb/resourceGroups/RG-Deba/providers/Microsoft.Storage/storageAccounts/azurestorage1991"
+		}
+	}
+}
