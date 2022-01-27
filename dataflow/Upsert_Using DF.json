@@ -1,0 +1,32 @@
+{
+	"name": "Upsert_Using DF",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "EmpSRCDB",
+						"type": "DatasetReference"
+					},
+					"name": "empsrc"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "EmpTGTDB",
+						"type": "DatasetReference"
+					},
+					"name": "emptgt"
+				}
+			],
+			"transformations": [
+				{
+					"name": "AlterRow1"
+				}
+			],
+			"script": "source(output(\n\t\tECD as integer,\n\t\tENAME as string,\n\t\tSAL as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> empsrc\nempsrc alterRow(upsertIf(2==2)) ~> AlterRow1\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tECD as integer,\n\t\tENAME as string,\n\t\tSAL as integer\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['ECD'],\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tECD,\n\t\tENAME,\n\t\tSAL\n\t)) ~> emptgt"
+		}
+	}
+}

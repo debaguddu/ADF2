@@ -1,0 +1,43 @@
+{
+	"name": "PL_DELETE_ACT",
+	"properties": {
+		"activities": [
+			{
+				"name": "Delete_File",
+				"type": "Delete",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Blob_Delete",
+						"type": "DatasetReference"
+					},
+					"logStorageSettings": {
+						"linkedServiceName": {
+							"referenceName": "Destination_connection",
+							"type": "LinkedServiceReference"
+						},
+						"path": "destination-container/delete-logging"
+					},
+					"enableLogging": true,
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"wildcardFileName": "*",
+						"enablePartitionDiscovery": false
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-11-14T11:49:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

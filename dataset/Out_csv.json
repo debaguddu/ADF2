@@ -1,0 +1,28 @@
+{
+	"name": "Out_csv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Destination_connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Address_out.csv",
+				"folderPath": {
+					"value": "@concat('ASQL/',formatDateTime(utcnow(),'yyyy'),'/',formatDateTime(utcnow(),'MM'))",
+					"type": "Expression"
+				},
+				"container": "destination-container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

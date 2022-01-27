@@ -1,0 +1,206 @@
+{
+	"name": "PL_UseCase1",
+	"properties": {
+		"activities": [
+			{
+				"name": "MetaData_Inbound",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Inbound_Location",
+						"type": "DatasetReference"
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach_Child",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "MetaData_Inbound",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('MetaData_Inbound').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Append_Array",
+							"type": "AppendVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Date_Array",
+								"value": {
+									"value": "@int(substring(item().name,4,8))",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Set_DateArray",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "ForEach_Child",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Disp_Date_Array",
+					"value": {
+						"value": "@variables('Date_Array')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Set_Max_Date",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set_DateArray",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Max_Date",
+					"value": {
+						"value": "@string(max(variables('Date_Array')))",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Copy2Dest",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Set_Max_Date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "InCopy",
+						"type": "DatasetReference",
+						"parameters": {
+							"InFile": {
+								"value": "@concat('EMP_',variables('Max_Date'),'.csv')",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Out_Copy",
+						"type": "DatasetReference",
+						"parameters": {
+							"PipelineName": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"OutFile": {
+								"value": "@concat('EMP_DT',variables('Max_Date'),'.csv')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"variables": {
+			"Date_Array": {
+				"type": "Array"
+			},
+			"Max_Date": {
+				"type": "String"
+			},
+			"Disp_Date_Array": {
+				"type": "Array"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-11-14T11:49:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

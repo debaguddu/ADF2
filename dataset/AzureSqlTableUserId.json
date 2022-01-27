@@ -1,0 +1,36 @@
+{
+	"name": "AzureSqlTableUserId",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "username",
+				"type": "varchar"
+			},
+			{
+				"name": "uid",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 0
+			},
+			{
+				"name": "fname",
+				"type": "varchar"
+			},
+			{
+				"name": "lname",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "USER_ID"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

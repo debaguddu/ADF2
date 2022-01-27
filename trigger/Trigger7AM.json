@@ -1,0 +1,41 @@
+{
+	"name": "Trigger7AM",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_INV_OLTP_to_ADLS",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"OLTP_DB_Name": [
+						"PRODUCT",
+						"VENDOR",
+						"WAREHOUSE",
+						"INVENTORY"
+					]
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-12-10T16:29:00",
+				"endTime": "2021-12-31T16:29:00",
+				"timeZone": "India Standard Time",
+				"schedule": {
+					"minutes": [
+						0
+					],
+					"hours": [
+						7
+					]
+				}
+			}
+		}
+	}
+}

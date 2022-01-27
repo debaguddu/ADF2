@@ -1,0 +1,46 @@
+{
+	"name": "InCopy",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "source_connection",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"InFile": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().InFile",
+					"type": "Expression"
+				},
+				"folderPath": "Inbound_Folder",
+				"container": "source-container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "EMPID",
+				"type": "String"
+			},
+			{
+				"name": "EMPNAME",
+				"type": "String"
+			},
+			{
+				"name": "SAL",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

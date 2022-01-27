@@ -1,0 +1,42 @@
+{
+	"name": "DF_Join",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Input_Source",
+						"type": "DatasetReference"
+					},
+					"name": "EmpData"
+				},
+				{
+					"dataset": {
+						"referenceName": "Input_Source",
+						"type": "DatasetReference"
+					},
+					"name": "DeptData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Emp_Dest",
+						"type": "DatasetReference"
+					},
+					"name": "Destination"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Join1"
+				},
+				{
+					"name": "Sort1"
+				}
+			],
+			"script": "source(output(\n\t\tEID as short,\n\t\tENAME as string,\n\t\tSAL as integer,\n\t\tDID as short\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> EmpData\nsource(output(\n\t\tDID as short,\n\t\tDNAME as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> DeptData\nEmpData, DeptData join(EmpData@DID == DeptData@DID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join1\nJoin1 sort(asc(EID, true)) ~> Sort1\nSort1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tEmployeeID as string,\n\t\tEmployeeName as string,\n\t\tEmployeeSalary as string,\n\t\tEmployeeDepartment as string\n\t),\n\tpartitionFileNames:[(concat(\"EmpFullData\", replace(toString(currentTimestamp()),':','-'),\".csv\"))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\tmapColumn(\n\t\tEmployeeID = EID,\n\t\tEmployeeName = ENAME,\n\t\tEmployeeSalary = SAL,\n\t\tEmployeeDepartment = DNAME\n\t),\n\tpartitionBy('hash', 1)) ~> Destination"
+		}
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"name": "Trigger_Storage",
+	"properties": {
+		"annotations": [
+			"Storage_Trigger"
+		],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PL_TEST_Trigger",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "BlobEventsTrigger",
+		"typeProperties": {
+			"blobPathBeginsWith": "/trigger-storage/blobs/",
+			"ignoreEmptyBlobs": false,
+			"scope": "/subscriptions/c33cc9bf-fbce-404a-bc75-943789884ffb/resourceGroups/RG-Deba/providers/Microsoft.Storage/storageAccounts/azurestorage1991",
+			"events": [
+				"Microsoft.Storage.BlobCreated"
+			]
+		}
+	}
+}

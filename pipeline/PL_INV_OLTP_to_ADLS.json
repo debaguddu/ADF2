@@ -1,0 +1,403 @@
+{
+	"name": "PL_INV_OLTP_to_ADLS",
+	"properties": {
+		"activities": [
+			{
+				"name": "Unload_ProductTable",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(pipeline().parameters.OLTP_DB_Name,variables('Product'))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy Product_Details",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "OracleSource",
+									"partitionOption": "None",
+									"queryTimeout": "02:00:00"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Inv_OracleTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"Schema_Name": {
+											"value": "@variables('Schema_Name')",
+											"type": "Expression"
+										},
+										"Table_Name": {
+											"value": "@concat(variables('Product'),'_DETAILS')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Inv_Copy_Table",
+									"type": "DatasetReference",
+									"parameters": {
+										"File_Path": {
+											"value": "@concat(pipeline().globalParameters.Folder_Path_Global,\n                variables('Product'),'/',\n                formatDateTime(utcnow(),'yyyy'),'/',\n                formatDateTime(utcnow(),'MM'),'/',\n                formatDateTime(utcnow(),'dd'),'/')",
+											"type": "Expression"
+										},
+										"File_Name": {
+											"value": "@concat(variables('Product'),\n               formatDateTime(utcnow(),'HHmmss'),'.csv')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Unload_VendorTable",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Unload_ProductTable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(pipeline().parameters.OLTP_DB_Name,variables('Vendor'))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy Vendor_Details",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "OracleSource",
+									"partitionOption": "None",
+									"queryTimeout": "02:00:00"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Inv_OracleTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"Schema_Name": {
+											"value": "@variables('Schema_Name')",
+											"type": "Expression"
+										},
+										"Table_Name": {
+											"value": "@concat(variables('Vendor'),'_DETAILS')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Inv_Copy_Table",
+									"type": "DatasetReference",
+									"parameters": {
+										"File_Path": {
+											"value": "@concat(pipeline().globalParameters.Folder_Path_Global,\n                variables('Vendor'),'/',\n                formatDateTime(utcnow(),'yyyy'),'/',\n                formatDateTime(utcnow(),'MM'),'/',\n                formatDateTime(utcnow(),'dd'),'/')",
+											"type": "Expression"
+										},
+										"File_Name": {
+											"value": "@concat(variables('Vendor'),\n               formatDateTime(utcnow(),'HHmmss'),'.csv')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Unload_WarehouseTable",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Unload_VendorTable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(pipeline().parameters.OLTP_DB_Name,variables('Warehouse'))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy Warehouse_Details",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "OracleSource",
+									"partitionOption": "None",
+									"queryTimeout": "02:00:00"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Inv_OracleTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"Schema_Name": {
+											"value": "@variables('Schema_Name')",
+											"type": "Expression"
+										},
+										"Table_Name": {
+											"value": "@concat(variables('Warehouse'),'_DETAILS')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Inv_Copy_Table",
+									"type": "DatasetReference",
+									"parameters": {
+										"File_Path": {
+											"value": "@concat(pipeline().globalParameters.Folder_Path_Global,\n                variables('Warehouse'),'/',\n                formatDateTime(utcnow(),'yyyy'),'/',\n                formatDateTime(utcnow(),'MM'),'/',\n                formatDateTime(utcnow(),'dd'),'/')",
+											"type": "Expression"
+										},
+										"File_Name": {
+											"value": "@concat(variables('Warehouse'),\n               formatDateTime(utcnow(),'HHmmss'),'.csv')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "Unload_Inv_Fact",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Unload_WarehouseTable",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@contains(pipeline().parameters.OLTP_DB_Name,variables('Inventory'))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Copy Inv_Fact",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "OracleSource",
+									"partitionOption": "None",
+									"queryTimeout": "02:00:00"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Inv_OracleTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"Schema_Name": {
+											"value": "@variables('Schema_Name')",
+											"type": "Expression"
+										},
+										"Table_Name": {
+											"value": "@concat(variables('Inventory'),'_FACT')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Inv_Copy_Table",
+									"type": "DatasetReference",
+									"parameters": {
+										"File_Path": {
+											"value": "@concat(pipeline().globalParameters.Folder_Path_Global,\n                variables('Inventory'),'/',\n                formatDateTime(utcnow(),'yyyy'),'/',\n                formatDateTime(utcnow(),'MM'),'/',\n                formatDateTime(utcnow(),'dd'),'/')",
+											"type": "Expression"
+										},
+										"File_Name": {
+											"value": "@concat(variables('Inventory'),\n               formatDateTime(utcnow(),'HHmmss'),'.csv')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"OLTP_DB_Name": {
+				"type": "array",
+				"defaultValue": []
+			}
+		},
+		"variables": {
+			"Product": {
+				"type": "String",
+				"defaultValue": "PRODUCT"
+			},
+			"Vendor": {
+				"type": "String",
+				"defaultValue": "VENDOR"
+			},
+			"Warehouse": {
+				"type": "String",
+				"defaultValue": "WAREHOUSE"
+			},
+			"Schema_Name": {
+				"type": "String",
+				"defaultValue": "HR"
+			},
+			"Inventory": {
+				"type": "String",
+				"defaultValue": "INVENTORY"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-12-10T17:06:11Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

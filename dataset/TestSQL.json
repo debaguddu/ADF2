@@ -1,0 +1,32 @@
+{
+	"name": "TestSQL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "TID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "TSAL",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TEST_LOAD"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

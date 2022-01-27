@@ -1,0 +1,204 @@
+{
+	"name": "PL_TABLE_LOOKUP",
+	"properties": {
+		"activities": [
+			{
+				"name": "Table_Lookup",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "Read_From_Table",
+						"type": "DatasetReference",
+						"parameters": {
+							"SchemaName": "dbo",
+							"TableName": "LookupTable"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Filter_Active_Columns",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "Table_Lookup",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Table_Lookup').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().Act,True)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "ForEachTableName",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Filter_Active_Columns",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Filter_Active_Columns').output.Value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy_Table",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Set Table_Name",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Read_From_Table",
+									"type": "DatasetReference",
+									"parameters": {
+										"SchemaName": {
+											"value": "@variables('Schema_Name')",
+											"type": "Expression"
+										},
+										"TableName": {
+											"value": "@variables('Table_Name')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Destination_DataSet",
+									"type": "DatasetReference",
+									"parameters": {
+										"Dest_Name": {
+											"value": "@pipeline().Pipeline",
+											"type": "Expression"
+										},
+										"DestFileName": {
+											"value": "@concat(variables('Schema_Name'),'_',variables('Table_Name'),formatdatetime(utcnow(),'yyyyMMddHHmmss'),'.csv')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Set Schema_Name",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Schema_Name",
+								"value": {
+									"value": "@replace(item().schemaName,' ','')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set Table_Name",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set Schema_Name",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "Table_Name",
+								"value": {
+									"value": "@replace(item().TabName,' ','')",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Schema_Name": {
+				"type": "String"
+			},
+			"Table_Name": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-11-14T11:49:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

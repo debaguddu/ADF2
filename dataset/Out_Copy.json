@@ -1,0 +1,39 @@
+{
+	"name": "Out_Copy",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Destination_connection",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"PipelineName": {
+				"type": "string"
+			},
+			"OutFile": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().OutFile",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().PipelineName",
+					"type": "Expression"
+				},
+				"container": "destination-container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

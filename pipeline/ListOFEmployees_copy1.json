@@ -1,0 +1,246 @@
+{
+	"name": "ListOFEmployees_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "EmpList",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup1').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Set variable1",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Stored procedure1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "CompletionMessages",
+								"value": {
+									"value": "Successfully completed",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set variable2",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Stored procedure1",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "ErrorMessage",
+								"value": {
+									"value": "@activity('Stored procedure1').error.Message",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Web1",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "Set variable1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": "https://prod-16.northcentralus.logic.azure.com:443/workflows/a45a053354db43cca20ad6b56fe23136/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fWPvYTA-OCP6BGuH1tgQJiC2n6RCgdcRB8Uwwx6CEoY",
+								"method": "POST",
+								"body": {
+									"value": "{\n    \"ErrorMessage\": \"@{variables('CompletionMessages')}\",\n    \"Pipeline\": \"@{pipeline().Pipeline}\",\n    \"RunId\": \"@{pipeline().RunId}\"\n}\n",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Web2",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "Set variable2",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": "https://prod-16.northcentralus.logic.azure.com:443/workflows/a45a053354db43cca20ad6b56fe23136/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fWPvYTA-OCP6BGuH1tgQJiC2n6RCgdcRB8Uwwx6CEoY",
+								"method": "POST",
+								"body": {
+									"value": "{\n    \"ErrorMessage\": \"@{variables('ErrorMessage')}\",\n    \"Pipeline\": \"@{pipeline().Pipeline}\",\n    \"RunId\": \"@{pipeline().RunId}\"\n}\n",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Stored procedure1",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Set Salary",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[emplistproc]",
+								"storedProcedureParameters": {
+									"EmpName": {
+										"value": {
+											"value": "@variables('EmpName')",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"EmpSal": {
+										"value": {
+											"value": "@variables('DefaultSalary')",
+											"type": "Expression"
+										},
+										"type": "Decimal"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureSqlDatabase1",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Set Name",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "EmpName",
+								"value": {
+									"value": "@item().Name",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Set Salary",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Set Name",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "DefaultSalary",
+								"value": "5000.00"
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"CompletionMessages": {
+				"type": "String"
+			},
+			"ErrorMessage": {
+				"type": "String"
+			},
+			"DefaultSalary": {
+				"type": "String"
+			},
+			"EmpName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-26T19:15:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

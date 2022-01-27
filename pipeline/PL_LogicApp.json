@@ -1,0 +1,47 @@
+{
+	"name": "PL_LogicApp",
+	"properties": {
+		"activities": [
+			{
+				"name": "Emil_send",
+				"type": "WebActivity",
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-16.northcentralus.logic.azure.com:443/workflows/a45a053354db43cca20ad6b56fe23136/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=fWPvYTA-OCP6BGuH1tgQJiC2n6RCgdcRB8Uwwx6CEoY",
+					"method": "POST",
+					"body": {
+						"value": "@concat(\n'{',\n    '\"Pipeline\": ','\"pipeline().Pipeline\",',\n    '\"RunId\": ','\"pipeline().RunId\"',\n'}'\n)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 5
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-12-18T14:32:48Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

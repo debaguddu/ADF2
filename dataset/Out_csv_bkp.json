@@ -1,0 +1,30 @@
+{
+	"name": "Out_csv_bkp",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Destination_connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat('BKUP_Address_',formatdatetime(utcnow(),'ddHHmmss'),'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat('Backup/ASQL/',formatDateTime(utcnow(),'yyyy'),'/',formatDateTime(utcnow(),'MM'))",
+					"type": "Expression"
+				},
+				"container": "destination-container"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

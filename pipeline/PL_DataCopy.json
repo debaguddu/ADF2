@@ -1,0 +1,121 @@
+{
+	"name": "PL_DataCopy",
+	"properties": {
+		"activities": [
+			{
+				"name": "DataCopy_Process",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Valid_File",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Source_Dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"SRC_file": {
+								"value": "@pipeline().parameters.InFile",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Destination_DataSet",
+						"type": "DatasetReference",
+						"parameters": {
+							"Dest_Name": {
+								"value": "@pipeline().Pipeline",
+								"type": "Expression"
+							},
+							"DestFileName": {
+								"value": "@pipeline().parameters.OutFile",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Valid_File",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Source_Dataset",
+						"type": "DatasetReference",
+						"parameters": {
+							"SRC_file": {
+								"value": "@pipeline().parameters.InFile",
+								"type": "Expression"
+							}
+						}
+					},
+					"timeout": "7.00:00:00",
+					"sleep": 10
+				}
+			}
+		],
+		"parameters": {
+			"InFile": {
+				"type": "string",
+				"defaultValue": "username1.csv"
+			},
+			"OutFile": {
+				"type": "string",
+				"defaultValue": "username.csv"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-11-14T11:49:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

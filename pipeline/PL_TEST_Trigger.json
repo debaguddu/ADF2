@@ -1,0 +1,19 @@
+{
+	"name": "PL_TEST_Trigger",
+	"properties": {
+		"activities": [
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-12-10T17:22:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
