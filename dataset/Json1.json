@@ -1,0 +1,55 @@
+{
+	"name": "Json1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "source_connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "drivers.json",
+				"container": "source-container"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"driverId": {
+					"type": "integer"
+				},
+				"driverRef": {
+					"type": "string"
+				},
+				"number": {
+					"type": "null"
+				},
+				"code": {
+					"type": "string"
+				},
+				"name": {
+					"type": "object",
+					"properties": {
+						"forename": {
+							"type": "string"
+						},
+						"surname": {
+							"type": "string"
+						}
+					}
+				},
+				"dob": {
+					"type": "string"
+				},
+				"nationality": {
+					"type": "string"
+				},
+				"url": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,152 @@
+{
+	"name": "TEST1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"validateDataConsistency": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Warning",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "Destination_connection",
+								"type": "LinkedServiceReference"
+							},
+							"path": "destination-container/TestLog"
+						}
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['driverId']"
+								},
+								"sink": {
+									"name": "driverId"
+								}
+							},
+							{
+								"source": {
+									"path": "$['driverRef']"
+								},
+								"sink": {
+									"name": "driverRef"
+								}
+							},
+							{
+								"source": {
+									"path": "$['number']"
+								},
+								"sink": {
+									"name": "number"
+								}
+							},
+							{
+								"source": {
+									"path": "$['code']"
+								},
+								"sink": {
+									"name": "code"
+								}
+							},
+							{
+								"source": {
+									"path": "$['name']['forename']"
+								},
+								"sink": {
+									"name": "forename"
+								}
+							},
+							{
+								"source": {
+									"path": "$['name']['surname']"
+								},
+								"sink": {
+									"name": "surname"
+								}
+							},
+							{
+								"source": {
+									"path": "$['dob']"
+								},
+								"sink": {
+									"name": "dob"
+								}
+							},
+							{
+								"source": {
+									"path": "$['nationality']"
+								},
+								"sink": {
+									"name": "nationality"
+								}
+							},
+							{
+								"source": {
+									"path": "$['url']"
+								},
+								"sink": {
+									"name": "url"
+								}
+							}
+						],
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Json1",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
