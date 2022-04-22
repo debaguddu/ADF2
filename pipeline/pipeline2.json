@@ -1,0 +1,31 @@
+{
+	"name": "pipeline2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Output",
+					"value": {
+						"value": "@split(variables('Input'),',')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"Input": {
+				"type": "String",
+				"defaultValue": "\"123,456,789,000\""
+			},
+			"Output": {
+				"type": "Array",
+				"defaultValue": []
+			}
+		},
+		"annotations": []
+	}
+}
