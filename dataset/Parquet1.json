@@ -5,11 +5,20 @@
 			"referenceName": "Destination_connection",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"outputName": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "Parquet",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().outputName",
+					"type": "Expression"
+				},
 				"folderPath": "practiceParquetSink",
 				"container": "destination-container"
 			},
