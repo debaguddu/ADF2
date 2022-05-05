@@ -162,6 +162,26 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'demoadf1991_ArmTemplate_3')]"
+			]
+		},
+		{
+			"name": "demoadf1991_ArmTemplate_5",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_5.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
 					},
 					"Trigger7AM_properties_PL_INV_OLTP_to_ADLS_parameters_OLTP_DB_Name": {
 						"value": "[parameters('Trigger7AM_properties_PL_INV_OLTP_to_ADLS_parameters_OLTP_DB_Name')]"
@@ -169,7 +189,7 @@
 				}
 			},
 			"dependsOn": [
-				"[resourceId('Microsoft.Resources/deployments', 'demoadf1991_ArmTemplate_3')]"
+				"[resourceId('Microsoft.Resources/deployments', 'demoadf1991_ArmTemplate_4')]"
 			]
 		}
 	]
