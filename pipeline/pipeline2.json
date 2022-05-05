@@ -116,7 +116,7 @@
 							"type": "AzureBlobStorageReadSettings",
 							"recursive": true,
 							"wildcardFolderPath": "practiceXMLinput",
-							"wildcardFileName": "Product.xml",
+							"wildcardFileName": "P1roduct.xml",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -148,7 +148,9 @@
 						"referenceName": "Xml1",
 						"type": "DatasetReference"
 					},
-					"fieldList": [],
+					"fieldList": [
+						"columnCount"
+					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"enablePartitionDiscovery": false
