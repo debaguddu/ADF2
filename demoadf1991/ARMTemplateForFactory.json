@@ -8107,7 +8107,7 @@
 								"parameters": {}
 							},
 							"fieldList": [
-								"columnCount"
+								"exists"
 							],
 							"storeSettings": {
 								"type": "AzureBlobStorageReadSettings",
