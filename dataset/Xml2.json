@@ -1,0 +1,19 @@
+{
+	"name": "Xml2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "source_connection",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Product.xml",
+				"folderPath": "practiceXMLinput",
+				"container": "source-container"
+			}
+		}
+	}
+}
