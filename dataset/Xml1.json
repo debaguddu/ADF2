@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "Product.xml",
 				"folderPath": "practiceXMLinput",
 				"container": "source-container"
 			}
