@@ -8072,7 +8072,7 @@
 									"type": "AzureBlobStorageReadSettings",
 									"recursive": true,
 									"wildcardFolderPath": "practiceXMLinput",
-									"wildcardFileName": "P1roduct.xml",
+									"wildcardFileName": "Product.xml",
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
